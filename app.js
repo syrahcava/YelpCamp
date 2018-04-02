@@ -26,7 +26,9 @@ app.use(flash());
 
 app.locals.moment = require("moment");
 
-mongoose.connect("mongodb://localhost/yelp_camp");
+// mongoose.connect("mongodb://localhost/yelp_camp");
+var url = process.env.DATABASEURL || "mongodb://localhost/yelp_camp";
+mongoose.connect(url);
 // 初始化数据
 // seedDB();
 
@@ -53,6 +55,6 @@ app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundsRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
-app.listen(3000, function() {
+app.listen(process.env.PORT, process.env.IP, function() {
   console.log("Yelpcamp Server start!");
 });
