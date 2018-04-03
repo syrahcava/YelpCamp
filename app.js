@@ -2,9 +2,11 @@ var bodyParser = require("body-parser");
 var createError = require('http-errors');
 var cookieParser = require('cookie-parser');
 var express = require("express");
+var session = require('express-session');
 var flash = require("connect-flash");
 var methodOverride = require("method-override");
 var mongoose = require("mongoose");
+var mongoStore = require('connect-mongo')(session);
 var logger = require('morgan');
 var path = require('path');
 var passport = require("passport");
@@ -46,11 +48,15 @@ mongoose.connect(url);
 // seedDB();
 
 // passport configuration
-app.use(require("express-session")({
+app.use(session({
   secret: "wadsads1231535d65f",
+  store: new mongoStore({
+    mongooseConnection: mongoose.connection
+  }),
   resave: false,
   saveUninitialized: false,
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new localStrategy(User.authenticate()));
