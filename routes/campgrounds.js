@@ -6,16 +6,32 @@ var Campground = require("../models/campground");
 var router = express.Router();
 
 router.get("/", function(req, res) {
-  Campground.find({}, function(err, campgrounds) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("campgrounds/index", {
-        campgrounds: campgrounds,
-        page: "campgrounds",
-      });
-    }
-  });
+  if (req.query.search) {
+    var regex = new RegExp(excapeRegex(req.query.search), "gi");
+    Campground.find({
+      name: regex
+    }, function(err, campgrounds) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("campgrounds/index", {
+          campgrounds: campgrounds,
+          page: "campgrounds",
+        });
+      }
+    });
+  } else {
+    Campground.find({}, function(err, campgrounds) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("campgrounds/index", {
+          campgrounds: campgrounds,
+          page: "campgrounds",
+        });
+      }
+    });
+  }
 });
 
 router.post("/", middleware.isLoggedIn, function(req, res) {
@@ -93,5 +109,9 @@ router.delete("/:id", middleware.checkCampgroundsOwnership, function(req, res) {
     }
   });
 });
+
+function excapeRegex(text) {
+  return text.replace(/[-[\]{}*+?.,\\^$|#\s]/g, "\\$&");
+};
 
 module.exports = router;
