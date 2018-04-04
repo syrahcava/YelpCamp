@@ -33,6 +33,7 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
         if (err) {
           console.log(err);
         } else {
+          req.flash("success", "Created a comment!");
           result.author.id = req.user._id;
           result.author.username = req.user.username;
           result.save();

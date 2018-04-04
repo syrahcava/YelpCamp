@@ -1,9 +1,35 @@
 var express = require("express");
+var fse = require("fs-extra");
+var multer = require("multer");
+var path = require("path");
 
 var middleware = require("../middleware");
 var Campground = require("../models/campground");
 
 var router = express.Router();
+
+var storage = multer.diskStorage({
+  filename: function(req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+  destination: function(req, file, cb) {
+    let filePath = path.resolve(__dirname, `../public/uploads`)
+
+    fse.ensureDir(filePath, function() {
+      cb(null, filePath)
+    })
+  }
+});
+var imageFilter = function(req, file, cb) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+    return cb(new Error("Only image files are allowed!"), false);
+  }
+  cb(null, true);
+};
+var upload = multer({
+  storage: storage,
+  fileFilter: imageFilter
+});
 
 router.get("/", function(req, res) {
   if (req.query.search) {
@@ -34,29 +60,25 @@ router.get("/", function(req, res) {
   }
 });
 
-router.post("/", middleware.isLoggedIn, function(req, res) {
-  var name = req.body.name;
-  var image = req.body.image;
-  var price = req.body.price;
-  var description = req.body.description;
-  var author = {
-    id: req.user._id,
-    username: req.user.username
-  }
-  var newCampground = {
-    name: name,
-    price: price,
-    image: image,
-    description: description,
-    author: author,
-  };
-  Campground.create(newCampground, function(err, newlyCreated) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.redirect("campgrounds");
+router.post("/", middleware.isLoggedIn, upload.single("image"), function(req, res) {
+  if (req.file) {
+    // 所有文件都保存在public目录下面
+    let url = req.file.path.substring(req.file.path.indexOf('/public/') + 7)
+    req.body.campground.image = url;
+    req.body.campground.author = {
+      id: req.user._id,
+      username: req.user.username
     }
-  });
+
+    Campground.create(req.body.campground, function(err, newlyCreated) {
+      if (err) {
+        req.flash("error", err.message);
+        return res.redirect("back");
+      } else {
+        res.redirect("/campgrounds/" + newlyCreated._id);
+      }
+    });
+  }
 });
 
 router.get("/new", middleware.isLoggedIn, function(req, res) {

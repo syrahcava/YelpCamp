@@ -1,21 +1,24 @@
 <% include ../partials/header %>
 
 <div class="container">
-  <div class="row">
-    <h1 style="text-align:center">Create a New Campground</h1>
-    <div style="width:30%; margin:25px auto;">
-      <form class="" action="/campgrounds" method="post">
+  <div class="row justify-content-center">
+    <div class="col-md-12 text-center">
+      <h1>Create a New Campground</h1>
+    </div>
+    <div class="col-xs-12 col-md-6 col-lg-4">
+      <form class="" action="/campgrounds" method="post" enctype="multipart/form-data">
         <div class="form-group">
-          <input class="form-control" type="text" name="name" value="" placeholder="name">
+          <input class="form-control" type="text" name="campground[name]" value="" placeholder="name">
         </div>
         <div class="form-group">
-          <input class="form-control" type="number" name="price" value="" placeholder="price">
+          <input class="form-control" type="number" name="campground[price]" value="" placeholder="price">
         </div>
         <div class="form-group">
-          <input class="form-control" type="text" name="image" value="" placeholder="image url">
+          <label for="image">Image</label>
+          <input type="file" id="image" name="image" accept="image/*" required>
         </div>
         <div class="form-group">
-          <input class="form-control" type="text" name="description" value="" placeholder="description">
+          <input class="form-control" type="text" name="campground[description]" value="" placeholder="description">
         </div>
         <div class="form-group">
           <button class="btn btn-primary btn-lg btn-block">Submit</button>

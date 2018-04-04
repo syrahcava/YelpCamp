@@ -202,7 +202,7 @@ router.get("/users/:id", function(req, res) {
         req.flash("error", err.message);
         res.redirect("/");
       }
-      res.render("/users/show", {
+      res.render("users/show", {
         user: foundUser,
         campgrounds: campgrounds,
       });

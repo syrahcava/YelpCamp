@@ -7,8 +7,8 @@ var flash = require("connect-flash");
 var methodOverride = require("method-override");
 var mongoose = require("mongoose");
 var mongoStore = require('connect-mongo')(session);
-var logger = require('morgan');
-var path = require('path');
+var logger = require("morgan");
+var path = require("path");
 var passport = require("passport");
 var localStrategy = require("passport-local");
 
